@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="旅行の条件を入力して最適な持ち物チェックリストを自動生成。Travel packing list generator with conditional items.">
+  <title>旅行チェックリスト — Travel Checklist</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header__inner">
+      <div class="header__title">
+        <span class="header__icon">✈️</span>
+        <div>
+          <h1 data-i18n="appTitle">旅行チェックリスト</h1>
+          <p class="header__subtitle" data-i18n="appSubtitle">旅行の条件を入力して最適な持ち物リストを生成</p>
+        </div>
+      </div>
+      <div class="header__controls">
+        <button id="lang-toggle" class="btn btn--ghost" aria-label="Switch language">English</button>
+        <button id="theme-toggle" class="btn btn--ghost btn--icon" aria-label="Toggle theme">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Trip Profile Form -->
+    <section class="card form-card" aria-label="Trip details">
+      <div class="form-grid">
+        <!-- Destination -->
+        <div class="form-group">
+          <label class="form-label" for="input-destination" data-i18n="labelDestination">行き先</label>
+          <div class="segmented" role="group">
+            <input type="radio" name="destination" id="dest-domestic" value="domestic" hidden>
+            <label for="dest-domestic" class="segmented__btn" data-i18n="domestic">国内</label>
+            <input type="radio" name="destination" id="dest-international" value="international" hidden>
+            <label for="dest-international" class="segmented__btn" data-i18n="international">海外</label>
+          </div>
+          <!-- Hidden select for JS reading -->
+          <select id="input-destination" class="visually-hidden" aria-hidden="true">
+            <option value="domestic">domestic</option>
+            <option value="international">international</option>
+          </select>
+        </div>
+
+        <!-- Duration -->
+        <div class="form-group">
+          <label class="form-label" id="days-label" for="input-days" data-i18n="labelDays">日数</label>
+          <div class="slider-row">
+            <input type="range" id="input-days" min="1" max="30" value="3" aria-label="Trip duration in days">
+            <span id="days-value" class="slider-value">3日間</span>
+          </div>
+        </div>
+
+        <!-- Season -->
+        <div class="form-group">
+          <label class="form-label" for="input-season" data-i18n="labelSeason">季節</label>
+          <select id="input-season" class="form-select">
+            <option value="spring" data-i18n="spring">春</option>
+            <option value="summer" data-i18n="summer" selected>夏</option>
+            <option value="fall" data-i18n="fall">秋</option>
+            <option value="winter" data-i18n="winter">冬</option>
+          </select>
+        </div>
+
+        <!-- Transport -->
+        <div class="form-group">
+          <label class="form-label" data-i18n="labelTransport">交通手段</label>
+          <div class="segmented" role="group">
+            <input type="radio" name="transport" id="trans-plane" value="plane" checked hidden>
+            <label for="trans-plane" class="segmented__btn">✈️ <span data-i18n="plane">飛行機</span></label>
+            <input type="radio" name="transport" id="trans-train" value="train" hidden>
+            <label for="trans-train" class="segmented__btn">🚄 <span data-i18n="train">電車</span></label>
+            <input type="radio" name="transport" id="trans-car" value="car" hidden>
+            <label for="trans-car" class="segmented__btn">🚗 <span data-i18n="car">車</span></label>
+          </div>
+          <select id="input-transport" class="visually-hidden" aria-hidden="true">
+            <option value="plane" selected>plane</option>
+            <option value="train">train</option>
+            <option value="car">car</option>
+          </select>
+        </div>
+
+        <!-- Trip type -->
+        <div class="form-group form-group--wide">
+          <label class="form-label" data-i18n="labelTripType">旅行の目的</label>
+          <div class="segmented segmented--4" role="group">
+            <input type="radio" name="tripType" id="type-business" value="business" hidden>
+            <label for="type-business" class="segmented__btn">💼 <span data-i18n="business">ビジネス</span></label>
+            <input type="radio" name="tripType" id="type-leisure" value="leisure" checked hidden>
+            <label for="type-leisure" class="segmented__btn">🗺️ <span data-i18n="leisure">観光</span></label>
+            <input type="radio" name="tripType" id="type-adventure" value="adventure" hidden>
+            <label for="type-adventure" class="segmented__btn">🏕️ <span data-i18n="adventure">アドベンチャー</span></label>
+            <input type="radio" name="tripType" id="type-beach" value="beach" hidden>
+            <label for="type-beach" class="segmented__btn">🏖️ <span data-i18n="beach">ビーチ</span></label>
+          </div>
+          <select id="input-tripType" class="visually-hidden" aria-hidden="true">
+            <option value="business">business</option>
+            <option value="leisure" selected>leisure</option>
+            <option value="adventure">adventure</option>
+            <option value="beach">beach</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button id="generate-btn" class="btn btn--primary btn--lg">
+          <span>📋</span> <span data-i18n="generate">リストを作成</span>
+        </button>
+        <div class="profile-controls">
+          <select id="profile-select" class="form-select form-select--sm" aria-label="Saved profiles">
+            <option value="">読み込む...</option>
+          </select>
+          <button id="delete-profile-btn" class="btn btn--ghost btn--sm" data-i18n="deleteProfile">削除</button>
+          <button id="save-profile-btn" class="btn btn--secondary btn--sm">
+            <span>💾</span> <span data-i18n="saveProfile">保存</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checklist Section -->
+    <section id="checklist-section" class="checklist-section">
+      <!-- Toolbar -->
+      <div class="checklist-toolbar">
+        <div class="progress-wrapper">
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-bar"></div>
+          </div>
+          <span id="progress-label" class="progress-label"></span>
+        </div>
+        <div class="toolbar-actions">
+          <!-- Custom item input -->
+          <div class="custom-item-row">
+            <input
+              type="text"
+              id="custom-item-input"
+              class="form-input"
+              data-i18n-placeholder="addPlaceholder"
+              placeholder="カスタムアイテムを入力..."
+              aria-label="Custom item"
+            >
+            <button id="add-item-btn" class="btn btn--secondary btn--sm" data-i18n="add">追加</button>
+          </div>
+          <button id="print-btn" class="btn btn--ghost btn--sm">
+            <span>🖨️</span> <span data-i18n="printList">印刷</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Checklist content -->
+      <div id="checklist-container" class="checklist-container">
+        <p class="empty-msg" data-i18n="noItems">アイテムが見つかりません。旅行情報を入力してリストを生成してください。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Travel Checklist — <a href="https://github.com/masaru87/travel-checklist" target="_blank" rel="noopener">GitHub</a></p>
+  </footer>
+
+  <!-- Sync segmented controls with hidden selects -->
+  <script type="module">
+    // Keep segmented radio buttons in sync with hidden selects (for JS reading)
+    function syncSegmented(name, selectId) {
+      const radios = document.querySelectorAll(`input[name="${name}"]`);
+      const sel = document.getElementById(selectId);
+      radios.forEach(r => {
+        r.addEventListener('change', () => {
+          if (sel) sel.value = r.value;
+        });
+      });
+    }
+    syncSegmented('destination', 'input-destination');
+    syncSegmented('transport', 'input-transport');
+    syncSegmented('tripType', 'input-tripType');
+
+    // Set initial values
+    document.getElementById('input-destination').value = 'domestic';
+    document.getElementById('input-transport').value = 'plane';
+    document.getElementById('input-tripType').value = 'leisure';
+  </script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

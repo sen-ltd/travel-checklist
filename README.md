@@ -79,3 +79,10 @@ travel-checklist/
 ## License
 
 MIT © 2026 [SEN LLC](https://sen.ltd)
+
+<!-- sen-publish:links -->
+## Links
+
+- 🌐 Demo: https://sen.ltd/portfolio/travel-checklist/
+- 📝 dev.to: https://dev.to/sendotltd/a-travel-checklist-generator-with-conditional-items-and-trip-profiles-13m0
+<!-- /sen-publish:links -->
